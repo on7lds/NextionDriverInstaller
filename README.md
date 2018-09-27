@@ -2,7 +2,7 @@ NextionDriverInstaller
 ======================
 
 This is the installer program for NextionDriver for those who do
-not want to do it theirselves.
+not want to do it by hand.
 
 This is the first release. I have tested it on some hotspots
 but there are always much more situations and combinations than
@@ -15,12 +15,13 @@ You could just run it (NextionDriver_ConvertConfig) if you installed
 NextionDriver by hand, but it also will be called when you run the
 installer !
 
+_**For the moment, both programs are intended for Pi-Star hotspots.**_
 
 Please let me know if you have any problem.
 
 
 
-##Installing NextionDriver (on Pi-Star)
+### Installing NextionDriver (on Pi-Star)
 
 log in to your Pi-Star with SSH
 
@@ -39,5 +40,5 @@ git clone https://github.com/on7lds/NextionDriverInstaller.git
 
 go !
 ```
-./install.sh
+sudo ./install.sh
 ```
