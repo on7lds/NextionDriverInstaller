@@ -1,0 +1,119 @@
+#!/bin/bash
+#########################################################
+#                                                       #
+#              MMDVMHost Service Handler                #
+#                                                       #
+# Written for Pi-Star (http://www.mw0mwz.co.uk/pi-star) #
+#               By Andy Taylor (MW0MWZ)                 #
+#                                                       #
+#                     Version 1.1                       #
+#                                                       #
+# Adapted by ON7LDS to start NextionDriver before       #
+#  mmdvmhost (and stop it after mmdvmhost has stopped)  #
+#                                                       #
+#########################################################
+
+# Service Config
+DAEMON=MMDVMHost
+DAEMON_HELPER=NextionDriver
+DAEMON_PATH=/usr/local/bin/
+CONFIG=/etc/mmdvmhost
+DAEMON_OPTS=$CONFIG
+DAEMON_HELPER_OPTS="-c /etc/mmdvmhost"
+PGREP=/usr/bin/pgrep
+KILL=/bin/kill
+SLEEP=/bin/sleep
+USER=root
+GROUP=root
+LOGDIR=/var/log/pi-star
+ipVar=`hostname -I | cut -d' ' -f1`
+
+# Pre-flight checks...
+test -x ${DAEMON_PATH}${DAEMON} || exit 1
+test -x ${DAEMON_PATH}${DAEMON_HELPER} || exit 1
+test -r $CONFIG || exit 1
+
+# if dstarrepeater is configured or running, dont start this daemon!
+! test -r /etc/dstar-radio.dstarrepeater || exit 1
+test -r /etc/dstar-radio.mmdvmhost || exit 1
+
+# check if dstarrepeaterd is running, dont start MMDVMHost if it is.
+if [ `$PGREP "dstarrepeaterd"` ]; then
+  echo "Service 'dstarrepeaterd' is already running, cannot start $DAEMON"
+  exit 1;
+fi
+
+# Verify the logging directory exists, if not create it and setup the ownership / permissions
+if [ ! -d $LOGDIR ]; then
+  mkdir -p $LOGDIR
+  chown ${USER}:${GROUP} $LOGDIR
+  chmod 775 $LOGDIR
+fi
+
+case "$1" in
+	start)
+		if [ `${PGREP} ${DAEMON}` ]; then
+			echo -e "$DAEMON is already running as PID "`$PGREP $DAEMON`
+			exit 1;
+		else
+			# Wait for an IP address
+			until [ $ipVar != " " ]; do
+				sleep 10
+				ipVar=`hostname -I`
+			done
+
+			nice -n -10 ${DAEMON_PATH}${DAEMON_HELPER} ${DAEMON_HELPER_OPTS}
+			nextiondriver=`$PGREP $DAEMON_HELPER`
+			sleep 1
+			if [ "$nextiondriver" == "" ]; then
+				echo -e "$DAEMON_HELPER failed to start. So I cannot start mmdvmhost ..."
+				exit 1;
+			fi
+			echo -e "$DAEMON_HELPER started as PID "`$PGREP $DAEMON_HELPER`
+
+			nice -n -10 ${DAEMON_PATH}${DAEMON} ${DAEMON_OPTS}
+			echo -e "$DAEMON started as PID "`$PGREP $DAEMON`
+			exit 0;
+		fi
+		;;
+
+	stop)
+		if [ `${PGREP} ${DAEMON}` ]; then
+			echo -e "Killing $DAEMON PID "`$PGREP $DAEMON`
+			$KILL `${PGREP} ${DAEMON}`
+		else
+			echo -e "$DAEMON is not running"
+		fi
+		if [ `${PGREP} ${DAEMON_HELPER}` ]; then
+			echo -e "Killing $DAEMON_HELPER PID "`$PGREP $DAEMON_HELPER`
+			$KILL `${PGREP} ${DAEMON_HELPER}`
+			exit 0;
+		else
+			echo -e "$DAEMON_HELPER is not running"
+			exit 1;
+		fi
+		;;
+
+	restart)
+		stop
+		sleep 3
+		start
+		;;
+
+	status)
+		if [ `${PGREP} ${DAEMON_HELPER}` ]; then
+			echo -e "$DAEMON_HELPER is running as PID "`${PGREP} ${DAEMON_HELPER}`
+		else
+			echo -e "$DAEMON_HELPER is not running"
+		fi
+		if [ `${PGREP} ${DAEMON}` ]; then
+			echo -e "$DAEMON is running as PID "`${PGREP} ${DAEMON}`
+		else
+			echo -e "$DAEMON is not running"
+		fi
+		;;
+
+	*)
+		echo $"Usage: $0 {start|stop|restart|status}"
+		exit 1
+esac
