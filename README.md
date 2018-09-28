@@ -38,6 +38,11 @@ get the installer
 git clone https://github.com/on7lds/NextionDriverInstaller.git
 ```
 
+go to the installation program directory
+```
+cd NextionDriverInstaller
+```
+
 go !
 ```
 sudo ./install.sh
