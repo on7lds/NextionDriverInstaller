@@ -5,7 +5,7 @@
 #                                                       #
 #                   (c)2018 by ON7LDS                   #
 #                                                       #
-#                        V1.01                          #
+#                        V1.02                          #
 #                                                       #
 #  This program changes the MMDVMHost configuration     #
 #   file to suit the needs of NextionDriver             #
@@ -45,7 +45,10 @@ fi
 
 if [[ -f "$MMDVMConfig.old" ]]; then
     echo "There already is a backup file $MMDVMConfig.old"
-    echo " If you are sure to run the installer again, then Please remove it."
+    echo "This could be because NextionDriver already was installed earlier."
+    echo "If this is the case, there probably is no need to run this convertor."
+    echo "If, however, you are sure to run this convertor again,"
+    echo " then please rename or remove $MMDVMConfig.old."
     exit 3
 fi
 

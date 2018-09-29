@@ -11,6 +11,12 @@
 
 if [ "$(which gcc)" = "" ]; then echo "- I need gcc. Please install it." exit; fi
 if [ "$(which git)" = "" ]; then echo "- I need git. Please install it." exit; fi
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )" #"
+if [ "$EUID" -ne 0 ]
+  then echo "- Please run as root (did you forget to prepend 'sudo' ?)"
+  exit
+fi
+
 
 echo "+ Getting NextionDriver ..."
 cd /tmp
@@ -29,8 +35,9 @@ PISTAR=$(if [ -f /etc/pistar-release ];then echo "OK"; fi)
 MMDVM=$(which MMDVMHost)
 BINDIR=$(echo "$MMDVM" | sed "s/MMDVMHost//")
 CONFIGFILE="MMDVM.ini"
-CONFIGDIR="/etc"
-MMDVMSTART="service mmdvmhost restart"
+CONFIGDIR="/etc/"
+MMDVMSTOP="service mmdvmhost stop"
+MMDVMSTART="service mmdvmhost start"
 
 #########################################################
 
@@ -64,8 +71,8 @@ checkversion () {
 }
 helpfiles () {
     echo "+ Copying groups and users files"
-    cp /tmp/NextionDriverInstaller/groups.txt $CONFIGDIR
-    cp /tmp/NextionDriverInstaller/stripped.csv $CONFIGDIR
+    cp $DIR/groups.txt $CONFIGDIR
+    cp $DIR/stripped.csv $CONFIGDIR
 }
 herstart () {
     echo -e "\n+ To test if it all works as expected,"
@@ -84,17 +91,13 @@ herstart () {
 }
 
 
-if [ "$EUID" -ne 0 ]
-  then echo "- Please run as root"
-  exit
-fi
-
 
 if [ "$PISTAR" = "OK" ]; then
     sudo mount -o remount,rw / ; sudo mount -o remount,rw /boot
     CONFIGFILE="mmdvmhost"
     CONFIGDIR="/etc/"
-    MMDVMSTART="service mmdvmhost restart"
+    MMDVMSTOP="service mmdvmhost stop"
+    MMDVMSTART="service mmdvmhost start"
 else
     echo ""
     echo "- This is not a Pi-Star."
@@ -122,8 +125,9 @@ fi
 if [ "$ND" = "" ]; then
     echo "+ No NextionDriver found, trying to install one."
     compileer
-    service mmdvmhost stop
+    $MMDVMSTOP
     killall -q -I MMDVMHost
+    cp $DIR"/mmdvmhost.service.pistar" /usr/local/sbin/mmdvmhost.service
     cp NextionDriver $BINDIR
     echo "+ Check version :"
     NextionDriver -V
@@ -132,7 +136,7 @@ if [ "$ND" = "" ]; then
     echo -e "+ NextionDriver installed\n"
     echo -e "+ -----------------------------------------------"
     echo -e "+ We will now start the configuration program ...\n"
-    ./NextionDriver_ConvertConfig $CONFIGDIR$CONFIGFILE
+    $DIR/NextionDriver_ConvertConfig $CONFIGDIR$CONFIGFILE
     herstart
     exit
 fi
@@ -147,7 +151,7 @@ echo "+ We are version $THISVERSION"
 if [ $TV  -gt $V ]; then
     echo "+ Start Update"
     compileer
-    service mmdvmhost stop
+    $MMDVMSTOP
     killall -q -I MMDVMHost
     cp NextionDriver $BINDIR
     echo -e "\n+ Check version"

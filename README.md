@@ -8,7 +8,7 @@ This is the first release. I have tested it on some hotspots
 but there are always much more situations and combinations than
 the ones I tested :-)
 
-This repository also includes the cofiguration convertor program
+This repository also includes the configuration convertor program
 for automatically converting the MMDVM.ini file to incorporate
 NextionDriver.
 You could just run it (NextionDriver_ConvertConfig) if you installed
@@ -38,12 +38,7 @@ get the installer
 git clone https://github.com/on7lds/NextionDriverInstaller.git
 ```
 
-go to the installation program directory
-```
-cd NextionDriverInstaller
-```
-
 go !
 ```
-sudo ./install.sh
+sudo NextionDriverInstaller/install.sh
 ```
