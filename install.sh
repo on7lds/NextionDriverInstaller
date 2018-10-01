@@ -5,41 +5,44 @@
 #                                                       #
 #                   (c)2018 by ON7LDS                   #
 #                                                       #
-#                        V1.00                          #
+#                        V1.01                          #
 #                                                       #
 #########################################################
 
 if [ "$(which gcc)" = "" ]; then echo "- I need gcc. Please install it." exit; fi
 if [ "$(which git)" = "" ]; then echo "- I need git. Please install it." exit; fi
+PATH=/opt/MMDVMHost:$PATH
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )" #"
 if [ "$EUID" -ne 0 ]
   then echo "- Please run as root (did you forget to prepend 'sudo' ?)"
   exit
 fi
 
-
 echo "+ Getting NextionDriver ..."
 cd /tmp
 rm -rf /tmp/NextionDriver
 git clone https://github.com/on7lds/NextionDriver.git;
-cd /tmp/NextionDriver
+cd /tmp/NextionDriver 2>/dev/null
 if [ "$(pwd)" != "/tmp/NextionDriver" ]; then echo "- Getting NextionDriver failed. Cannot continue."; exit; fi
 
 
-#########################################################
+#######################################################################################
 
 THISVERSION=$(cat NextionDriver.h | grep VERSION | sed "s/.*VERSION //" | sed 's/"//g')
 TV=$(echo $THISVERSION | sed 's/\.//')
 ND=$(which NextionDriver)
 PISTAR=$(if [ -f /etc/pistar-release ];then echo "OK"; fi)
 MMDVM=$(which MMDVMHost)
-BINDIR=$(echo "$MMDVM" | sed "s/MMDVMHost//")
+BINDIR=$(echo "$MMDVM" | sed "s/\/MMDVMHost//")
 CONFIGFILE="MMDVM.ini"
 CONFIGDIR="/etc/"
+SYSTEMCTL="systemctl daemon-reload"
 MMDVMSTOP="service mmdvmhost stop"
 MMDVMSTART="service mmdvmhost start"
+NDSTOP="service nextion-helper stop"
 
-#########################################################
+#######################################################################################
+
 
 compileer () {
     echo "+ Compiling ..."
@@ -87,20 +90,36 @@ herstart () {
         if [ "$x" = "N" ]; then x="n"; fi
     done
     echo -e "\n\n+ OK, not rebooting. Trying to start mmdvmhost.\n\n"
+    $SYSTEMCTL
     $MMDVMSTART
 }
 
 
+CHECK=""
 
 if [ "$PISTAR" = "OK" ]; then
     sudo mount -o remount,rw / ; sudo mount -o remount,rw /boot
     CONFIGFILE="mmdvmhost"
     CONFIGDIR="/etc/"
-    MMDVMSTOP="service mmdvmhost stop"
-    MMDVMSTART="service mmdvmhost start"
-else
-    echo ""
-    echo "- This is not a Pi-Star."
+    CHECK="PISTAR"
+fi
+if [ "$CHECK" = "" ]; then
+
+echo "Bindir [$BINDIR]"
+    if [ "$BINDIR" = "/opt/MMDVMHost" ]; then
+        echo ""
+        echo "+ Found MMDVMHost in /opt."
+        echo "+ I'm going to suppose you followed "
+        echo "+  https://g0wfv.wordpress.com/how-to-auto-start-mmdvmhost-as-a-service-on-boot-in-raspbian-jessie/"
+        echo ""
+        echo ""
+        CONFIGFILE="MMDVMHost.ini"
+        CONFIGDIR="/opt/MMDVMHost"
+        CHECK="JESSIE"
+    fi
+fi
+if [ "$CHECK" = "" ]; then
+    echo "- I could not find out which system this is."
     echo "- At this moment, I cannot yet automaticly install NextionDriver"
     echo ""
     echo "- Sorry."
@@ -125,9 +144,25 @@ fi
 if [ "$ND" = "" ]; then
     echo "+ No NextionDriver found, trying to install one."
     compileer
+    $SYSTEMCTL
+    $NDSTOP
     $MMDVMSTOP
     killall -q -I MMDVMHost
-    cp $DIR"/mmdvmhost.service.pistar" /usr/local/sbin/mmdvmhost.service
+    killall -9 -q -I MMDVMHost
+    if [ "$CHECK" = "PISTAR" ]; then 
+        cp $DIR"/mmdvmhost.service.pistar" /usr/local/sbin/mmdvmhost.service
+    fi
+    if [ "$CHECK" = "JESSIE" ]; then 
+        cp $DIR"/mmdvmhost.service.jessie" /lib/systemd/system/mmdvmhost.service
+        cp $DIR"/mmdvmhost.timer.jessie" /lib/systemd/system/mmdvmhost.timer
+        cp $DIR"/nextion-helper.service.jessie" /lib/systemd/system/nextion-helper.service
+        if [ -e /etc/systemd/system/nextion-helper.service ]; then
+            echo "+ there is already a link /etc/systemd/system/nextion-helper.service"
+            echo "+ I'll leave it like that."
+        else
+            ln -s /lib/systemd/system/nextion-helper.service /etc/systemd/system/nextion-helper.service 
+        fi
+    fi
     cp NextionDriver $BINDIR
     echo "+ Check version :"
     NextionDriver -V
@@ -151,8 +186,13 @@ echo "+ We are version $THISVERSION"
 if [ $TV  -gt $V ]; then
     echo "+ Start Update"
     compileer
+    $SYSTEMCTL
+    $NDSTOP
     $MMDVMSTOP
     killall -q -I MMDVMHost
+    killall -q -I NextionDriver
+    killall -9 -q -I MMDVMHost
+    killall -9 -q -I NextionDriver
     cp NextionDriver $BINDIR
     echo -e "\n+ Check version"
     NextionDriver -V

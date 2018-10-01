@@ -1,0 +1,15 @@
+[Unit]
+Description=Nextion Helper Service Service
+After=syslog.target network.target
+Before= mmdvmhost.service
+
+[Service]
+User=root
+WorkingDirectory=/opt/MMDVMHost
+Type=forking
+ExecStart=/opt/MMDVMHost/NextionDriver -c /opt/MMDVM.ini -vvvv
+ExecStop=/usr/bin/killall NextionDriver
+
+[Install]
+WantedBy=multi-user.target
+

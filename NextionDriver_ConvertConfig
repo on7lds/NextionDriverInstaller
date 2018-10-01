@@ -5,7 +5,7 @@
 #                                                       #
 #                   (c)2018 by ON7LDS                   #
 #                                                       #
-#                        V1.02                          #
+#                        V1.03                          #
 #                                                       #
 #  This program changes the MMDVMHost configuration     #
 #   file to suit the needs of NextionDriver             #
@@ -24,14 +24,14 @@ if [ "$1" == "" ]; then
 fi
 
 MMDVMConfig=$1
-VERSION="1.01"
+VERSION="1.03"
 echo ""
-#echo "Starting NextionDriver_ConvertConfig $VERSION"
-echo ""
+echo "-----------------------------------------------------------"
 echo "NOTE: I tried to make this script as foolproof as possible."
 echo "  There might still be situations where it does not work"
 echo "  as expected."
 echo "  If you should discover any bugs, please let me know."
+echo "-----------------------------------------------------------"
 echo ""
 echo "Starting NextionDriver_ConvertConfig $VERSION"
 echo ""
@@ -49,6 +49,9 @@ if [[ -f "$MMDVMConfig.old" ]]; then
     echo "If this is the case, there probably is no need to run this convertor."
     echo "If, however, you are sure to run this convertor again,"
     echo " then please rename or remove $MMDVMConfig.old."
+    echo ""
+    echo "Mind you, running the convertor twice might result in a"
+    echo " broken configuration"
     exit 3
 fi
 

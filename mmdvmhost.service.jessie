@@ -1,0 +1,14 @@
+[Unit]
+Description=MMDVM Host Service
+After=syslog.target network.target
+BindsTo=nextion-helper.service
+
+[Service]
+User=root
+WorkingDirectory=/opt/MMDVMHost
+ExecStartPre=/bin/sleep 3
+ExecStart=/usr/bin/screen -S MMDVMHost -D -m /opt/MMDVMHost/MMDVMHost /opt/MMDVM.ini
+ExecStop=/usr/bin/screen -S MMDVMHost -X quit
+
+[Install]
+WantedBy=multi-user.target
