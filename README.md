@@ -1,41 +1,55 @@
 NextionDriver Installer and Checker
 ===================================
+This repository brings you 3 helper programs for the installation of
+NextionDriver when you do not want to do it by hand:
 
-##NextionDriver Installer
+ * a program to install NextionDriver
+ * a program to convert an existing MMDVMHost configuration file for
+   using NextionDriver (this is called by the installer program)
+ * a program to check the installation
 
-This is the installer program for NextionDriver for those who do
-not want to do it by hand.
 
-This is the first release. I have tested it on some hotspots
-but there are always much more situations and combinations than
-the ones I tested :-)
+### install.sh
 
-This repository also includes the configuration convertor program
-for automatically converting the MMDVM.ini file to incorporate
-NextionDriver.
+This is the installer program for NextionDriver.
+
+I (and others) have tested it on some hotspots, but there are always
+much more situations and combinations than the ones we tested :-)
+
+The installer runs the configuration convertor program for automatically
+converting the MMDVM.ini file to incorporate NextionDriver.
+
+
+### NextionDriver_ConvertConfig
+
 You could just run it (NextionDriver_ConvertConfig) if you installed
 NextionDriver by hand, but it also will be called when you run the
 installer !
 
-_**For the moment, both programs are intended for Pi-Star hotspots.**_
+### check_installation.sh
 
-Please let me know if you have any problem.
+When you have installed the NextionDriver, this programs tries to check
+the  MMDVMHost and NextionDriver configuration.  
+The program then gives a lot of information about the installation
+of the NextionDriver and if it seems to be OK or not.
 
 
 
-### Installing NextionDriver (on Pi-Star)
+
+## Installing NextionDriver (on Pi-Star)
 
 log in to your Pi-Star with SSH
 
 * use PuTTY
-* or go to your dashboard -> configuration -> expert -> SSH access (http://pi-star.local/admin/expert/ssh_access.php)
+* or go to your dashboard -> configuration -> expert -> SSH access
+  (http://pi-star.local/admin/expert/ssh_access.php)
 
 go to the /tmp directory
 ```
 cd /tmp
 ```
 
-get the installer
+get the software
 ```
 git clone https://github.com/on7lds/NextionDriverInstaller.git
 ```
@@ -46,12 +60,7 @@ sudo NextionDriverInstaller/install.sh
 ```
 
 
-##NextionDriver Checker
-
-This programs tries to check the MMDVMHost and NextionDriver
-configuration.
-
-### Checking NextionDriver installation (on Pi-Star)
+## Checking the installing (on Pi-Star)
 
 log in to your Pi-Star with SSH
 
@@ -63,15 +72,14 @@ go to the /tmp directory
 cd /tmp
 ```
 
-get the installer
+get the software
 ```
 git clone https://github.com/on7lds/NextionDriverInstaller.git
 ```
+>NOTE: if you get an error that the destionation path exists,
+>you already downloaded the software. The just ho to the next step.
 
 go !
 ```
 sudo NextionDriverInstaller/check_installation.sh
 ```
-
-The program then gives a lot of information about the installation
-of the NextionDriver and if it seems to be OK or not.
