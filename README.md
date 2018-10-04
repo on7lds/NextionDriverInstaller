@@ -15,6 +15,7 @@ This is the installer program for NextionDriver.
 
 I (and others) have tested it on some hotspots, but there are always
 much more situations and combinations than the ones we tested :-)
+(special thanks to Rob PD0DIB for his feedback)
 
 The installer runs the configuration convertor program for automatically
 converting the MMDVM.ini file to incorporate NextionDriver.
