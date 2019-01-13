@@ -174,7 +174,7 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
     # hier zetten we onze gegevens tussen
     if [[  "$SECTION" != "Nextion" && "$FOUND_NEXTION" == "1" && "${line:0:1}" == "[" ]]; then
         echo "Info: Inserting [NextionDriver] section"
-        SECTION="[NextionDriver]\nPort=$SERIALPORT\nLogLevel=2\nDataFilesPath=$DATAFILES\nGroupsFile=groups.txt\nDMRidFile=stripped.csv\nremoveDim=0\n\n"
+        SECTION="[NextionDriver]\nPort=$SERIALPORT\nLogLevel=2\nDataFilesPath=$DATAFILES\nGroupsFile=groups.txt\nDMRidFile=stripped.csv\nremoveDim=0\nSleepWhenInactive=600\n\n"
         echo -e "$SECTION" >> "$MMDVMConfig"
         echo -e "\n\nInserted section :"
         echo "------------------------------"
