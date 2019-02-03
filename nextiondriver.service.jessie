@@ -1,0 +1,17 @@
+[Unit]
+Description=NextionDriver service
+DefaultDependencies=no
+After=local-fs.target syslog.target network.target
+Before=timers.target
+
+[Service]
+User=root
+Type=forking
+WorkingDirectory=/usr/local/etc/
+ExecStart=/opt/MMDVMHost/NextionDriver -c /opt/MMDVM.ini -vvvv
+ExecStop=/usr/bin/killall NextionDriver
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=network-online.target
+RequiredBy=mmdvmhost.service

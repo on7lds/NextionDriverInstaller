@@ -1,0 +1,18 @@
+[Unit]
+Description=NextionDriver service
+DefaultDependencies=no
+After=local-fs.target wifi-country.service
+Before=timers.target
+
+[Service]
+User=root
+Type=forking
+WorkingDirectory=/usr/local/etc/
+ExecStart=/usr/local/bin/NextionDriver -c /etc/mmdvmhost -i
+ExecStop=/usr/bin/killall NextionDriver
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=network-online.target
+RequiredBy=mmdvmhost.service
+

@@ -3,9 +3,9 @@
 #                                                       #
 #                 NextionDriver installer               #
 #                                                       #
-#                   (c)2018 by ON7LDS                   #
+#                 (c)2018-2019 by ON7LDS                #
 #                                                       #
-#                        V1.01                          #
+#                        V1.02                          #
 #                                                       #
 #########################################################
 
@@ -39,7 +39,8 @@ CONFIGDIR="/etc/"
 SYSTEMCTL="systemctl daemon-reload"
 MMDVMSTOP="service mmdvmhost stop"
 MMDVMSTART="service mmdvmhost start"
-NDSTOP="service nextion-helper stop"
+NDOUDSTOP="service nextion-helper stop 2>/dev/null"
+NDSTOP="service nextiondriver"
 
 #######################################################################################
 
@@ -140,30 +141,48 @@ if [ "$MMDVM" = "" ]; then
 fi
 
 
+########## Check for older installation ##########
+if [ $(cat /usr/local/sbin/mmdvmhost.service | grep extion | wc -l) -gt 0 ]; then
+    echo -e "I older installation found, removing ..."
+    ND=""
+fi
+
+
+
 ########## Check for Install ##########
 if [ "$ND" = "" ]; then
     echo "+ No NextionDriver found, trying to install one."
     compileer
     $SYSTEMCTL
+    $NDOUDSTOP 2>/dev/null
     $NDSTOP
     $MMDVMSTOP
     killall -q -I MMDVMHost
     killall -9 -q -I MMDVMHost
+    systemctl disable mmdvmhost
+    systemctl disable nextion-helper 2>/dev/null
+    systemctl disable nextiondriver
     if [ "$CHECK" = "PISTAR" ]; then 
-        cp $DIR"/mmdvmhost.service.pistar" /usr/local/sbin/mmdvmhost.service
+        echo "+ found PISTAR"
+        cp $DIR"/nextiondriver.service.binary.pistar" /usr/local/sbin/nextiondriver.service
+        if [ $(cat /usr/local/sbin/mmdvmhost.service | grep extion | wc -l) -gt 0 ]; then
+            echo "+ Restoring mmdvmhost.service binary"
+            rm /usr/local/sbin/mmdvmhost.service
+            git --work-tree=/usr/local/sbin/ --git-dir=/usr/local/sbin/.git checkout mmdvmhost.service
+        fi
+        echo "+ Installing services"
+        cp $DIR"/mmdvmhost.service.pistar" /lib/systemd/system/mmdvmhost.service
+        cp $DIR"/nextiondriver.service.pistar" /lib/systemd/system/nextiondriver.service
     fi
     if [ "$CHECK" = "JESSIE" ]; then 
         cp $DIR"/mmdvmhost.service.jessie" /lib/systemd/system/mmdvmhost.service
         cp $DIR"/mmdvmhost.timer.jessie" /lib/systemd/system/mmdvmhost.timer
-        cp $DIR"/nextion-helper.service.jessie" /lib/systemd/system/nextion-helper.service
-        if [ -e /etc/systemd/system/nextion-helper.service ]; then
-            echo "+ there is already a link /etc/systemd/system/nextion-helper.service"
-            echo "+ I'll leave it like that."
-        else
-            ln -s /lib/systemd/system/nextion-helper.service /etc/systemd/system/nextion-helper.service 
-        fi
+        rm -f /lib/systemd/system/nextion-helper.service
+        cp $DIR"/nextiondriver.service.jessie" /lib/systemd/system/nextiondriver.service
     fi
     cp NextionDriver $BINDIR
+    systemctl enable mmdvmhost
+    systemctl enable nextiondriver
     echo "+ Check version :"
     NextionDriver -V
     checkversion

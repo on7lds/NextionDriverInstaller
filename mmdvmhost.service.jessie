@@ -1,7 +1,7 @@
 [Unit]
-Description=MMDVM Host Service
+Description=MMDVMHost Radio Service
 After=syslog.target network.target
-BindsTo=nextion-helper.service
+BindsTo=nextiondriver.service
 
 [Service]
 User=root
