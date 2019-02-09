@@ -5,7 +5,7 @@
 #                                                       #
 #                 (c)2018-2019 by ON7LDS                #
 #                                                       #
-#                        V1.02                          #
+#                        V1.03                          #
 #                                                       #
 #########################################################
 
@@ -36,6 +36,7 @@ MMDVM=$(which MMDVMHost)
 BINDIR=$(echo "$MMDVM" | sed "s/\/MMDVMHost//")
 CONFIGFILE="MMDVM.ini"
 CONFIGDIR="/etc/"
+FILESDIR="/usr/local/etc/"
 SYSTEMCTL="systemctl daemon-reload"
 MMDVMSTOP="service mmdvmhost stop"
 MMDVMSTART="service mmdvmhost start"
@@ -74,9 +75,11 @@ checkversion () {
     fi
 }
 helpfiles () {
+    rm -f /etc/groups.txt
+    rm -f /etc/stripped.csv
     echo "+ Copying groups and users files"
-    cp $DIR/groups.txt $CONFIGDIR
-    cp $DIR/stripped.csv $CONFIGDIR
+    cp $DIR/groups.txt $FILESDIR
+    cp $DIR/stripped.csv $FILESDIR
 }
 herstart () {
     echo -e "\n+ To test if it all works as expected,"
@@ -105,8 +108,7 @@ if [ "$PISTAR" = "OK" ]; then
     CHECK="PISTAR"
 fi
 if [ "$CHECK" = "" ]; then
-
-echo "Bindir [$BINDIR]"
+#    echo "Bindir [$BINDIR]"
     if [ "$BINDIR" = "/opt/MMDVMHost" ]; then
         echo ""
         echo "+ Found MMDVMHost in /opt."
@@ -127,8 +129,6 @@ if [ "$CHECK" = "" ]; then
     echo ""
     exit
 fi
-
-
 if [ "$MMDVM" = "" ]; then
     echo ""
     echo "- No MMDVMHost found,"
@@ -200,7 +200,7 @@ fi
 VERSIE=$($ND -V | grep version | sed "s/^.*version //")
 V=$(echo $VERSIE | sed 's/\.//')
 echo "+ NextionDriver $VERSIE found at $ND"
-echo "+ We are version $THISVERSION"
+echo "+ We are at version $THISVERSION"
 
 if [ $TV  -gt $V ]; then
     echo "+ Start Update"

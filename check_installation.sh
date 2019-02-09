@@ -44,8 +44,8 @@ if [ "$CHECK" = "" ]; then
 fi
 
 echo "----------------------"
-echo "Searchin MMDVMHost ..."
-echo "----------------------"
+echo "Searching MMDVMHost ..."
+echo "-----------------------"
 if [ "$MMDVM" = "" ]; then
     MMDVM=$(find / -executable | grep "MMDVMHost$")
     AANT=$(echo "$MMDVM" | wc -l)
@@ -59,7 +59,7 @@ else
     echo "+ MMDVMHost found at $MMDVM"
 fi
 
-echo "+ Searchin MMDVMHost configuration file ..."
+echo "+ Searching MMDVMHost configuration file ..."
 CONFIGOK=""
 if [ -f "$CONFIGFILE" ]; then
     CONFIGOK=$(cat $CONFIGFILE | grep General)
@@ -121,8 +121,8 @@ fi
 
 echo ""
 echo "--------------------------"
-echo "Searchin NextionDriver ..."
-echo "--------------------------"
+echo "Searching NextionDriver ..."
+echo "---------------------------"
 if [ "$ND" = "" ]; then
     ND=$(find / -executable | grep "NextionDriver$")
     AANT=$(echo "$ND" | wc -l)

@@ -1,5 +1,8 @@
 NextionDriver Installer and Checker
 ===================================
+
+This is installer version 1.03 ( 09 feb 2019 )
+
 This repository brings you 3 helper programs for the installation of
 NextionDriver when you do not want to do it by hand:
 
@@ -7,8 +10,6 @@ NextionDriver when you do not want to do it by hand:
  * a program to convert an existing MMDVMHost configuration file for
    using NextionDriver (this is called by the installer program)
  * a program to check the installation
-
-This is installer version 1.02 ( 03 feb 2019 )
 
 -----
 __Please use this installer to update your system if your installation is
