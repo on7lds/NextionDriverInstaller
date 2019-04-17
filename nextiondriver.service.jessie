@@ -1,7 +1,7 @@
 [Unit]
 Description=NextionDriver service
 DefaultDependencies=no
-After=local-fs.target syslog.target network.target
+After=local-fs.target syslog.target network.target network-online.target
 Before=timers.target
 
 [Service]

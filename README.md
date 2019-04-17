@@ -3,6 +3,10 @@ NextionDriver Installer and Checker
 
 This is installer version 1.03 ( 09 feb 2019 )
 
+04/2019 : changed startup scripts. NextionDriver will start later in the
+ process, but wil less likely give problems when using modem connected
+ displays
+
 This repository brings you 3 helper programs for the installation of
 NextionDriver when you do not want to do it by hand:
 
@@ -12,8 +16,9 @@ NextionDriver when you do not want to do it by hand:
  * a program to check the installation
 
 -----
-__Please use this installer to update your system if your installation is
-older than this date. Even if the NextionDriver was recently updated__
+__Pi-Star users : Please use this installer to update your system if your 
+installation is older than 09 feb 2019. Even if the NextionDriver was 
+recently updated__
 
 -----
 
