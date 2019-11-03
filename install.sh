@@ -1,4 +1,22 @@
 #!/bin/bash
+
+#   Copyright (C) by Lieven De Samblanx ON7LDS
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
 #########################################################
 #                                                       #
 #                 NextionDriver installer               #
@@ -41,7 +59,7 @@ SYSTEMCTL="systemctl daemon-reload"
 MMDVMSTOP="service mmdvmhost stop"
 MMDVMSTART="service mmdvmhost start"
 NDOUDSTOP="service nextion-helper stop 2>/dev/null"
-NDSTOP="service nextiondriver"
+NDSTOP="service nextiondriver stop"
 
 #######################################################################################
 
@@ -78,6 +96,8 @@ helpfiles () {
     rm -f /etc/groups.txt
     rm -f /etc/stripped.csv
     echo "+ Copying groups and users files"
+    wget "https://api.brandmeister.network/v1.0/groups/" -O /tmp/groups.txt
+    if [ $? -eq 0 ]; then cp /tmp/groups.txt $DIR/groups.txt; fi
     cp $DIR/groups.txt $FILESDIR
     cp $DIR/stripped.csv $FILESDIR
 }

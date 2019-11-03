@@ -1,7 +1,9 @@
-NextionDriver Installer and Checker
-===================================
+ON7LDS NextionDriver Installer and Checker
+==========================================
 
-This is installer version 1.03 ( 09 feb 2019 )
+This is installer version 1.04 ( 03 oct 2019 )
+
+03/2019 : changed NextionDriver config options / minor corrections
 
 04/2019 : changed startup scripts. NextionDriver will start later in the
  process, but wil less likely give problems when using modem connected
@@ -29,7 +31,7 @@ This is the installer program for NextionDriver.
 
 I (and others) have tested it on some hotspots, but there are always
 much more situations and combinations than the ones we tested :-)
-(special thanks to Rob PD0DIB for his feedback)
+(special thanks to Rob PD0DIB and Jason KE7FNS their feedback)
 
 The installer runs the configuration convertor program for automatically
 converting the MMDVM.ini file to incorporate NextionDriver.
@@ -92,7 +94,7 @@ get the software
 git clone https://github.com/on7lds/NextionDriverInstaller.git
 ```
 >NOTE: if you get an error that the destionation path exists,
->you already downloaded the software. The just ho to the next step.
+>you already downloaded the software. The just go to the next step.
 
 go !
 ```

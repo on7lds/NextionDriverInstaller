@@ -1,11 +1,29 @@
 #!/bin/bash
+
+#   Copyright (C) by Lieven De Samblanx ON7LDS
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
 #########################################################
 #                                                       #
 #           MMDVMHost configuration patcher             #
 #                                                       #
 #                   (c)2018 by ON7LDS                   #
 #                                                       #
-#                        V1.03                          #
+#                        V1.04                          #
 #                                                       #
 #  This program changes the MMDVMHost configuration     #
 #   file to suit the needs of NextionDriver             #
@@ -24,7 +42,10 @@ if [ "$1" == "" ]; then
 fi
 
 MMDVMConfig=$1
-VERSION="1.03"
+VERSION="1.04"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )" #"
+
+
 echo ""
 echo "-----------------------------------------------------------"
 echo "NOTE: I tried to make this script as foolproof as possible."
@@ -174,7 +195,7 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
     # hier zetten we onze gegevens tussen
     if [[  "$SECTION" != "Nextion" && "$FOUND_NEXTION" == "1" && "${line:0:1}" == "[" ]]; then
         echo "Info: Inserting [NextionDriver] section"
-        SECTION="[NextionDriver]\nPort=$SERIALPORT\nLogLevel=2\nDataFilesPath=$DATAFILES\nGroupsFile=groups.txt\nDMRidFile=stripped.csv\nremoveDim=0\nSleepWhenInactive=600\n\n"
+        SECTION="[NextionDriver]\nPort=$SERIALPORT\nDataFilesPath=$DATAFILES\n"$(cat $DIR/NextionDriver.cfg)"\n"
         echo -e "$SECTION" >> "$MMDVMConfig"
         echo -e "\n\nInserted section :"
         echo "------------------------------"
