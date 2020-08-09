@@ -26,7 +26,7 @@
 #  This program checkes the MMDVMHost configuration     #
 #   and NextionDriver configuration files               #
 #                                                       #
-#                        V1.00                          #
+#                        V1.01                          #
 #                                                       #
 #########################################################
 
@@ -132,7 +132,7 @@ if [ "$ND_CONFIG" = "" ]; then
     echo "- ERROR ERROR ERROR ERROR ERROR:"
     B="- MMDVMHost is NOT configured for NextionDriver !!!"
     echo $B
-    SAMEN="$SAMEN\$B\n"
+    SAMEN="$SAMEN$B\n"
 fi
 
 fi
@@ -166,7 +166,7 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
         echo "I    Nextion is connected to $ND_PORT"
     fi
 done < "$CONFIGFILE"
-if [ $ND_PORT != "modem" ]; then
+if [ "$ND_PORT" != "modem" ]; then
     if [ -w "$ND_PORT" ]; then
         echo "+ Nextion seems to be connected to an active port"
         echo $B

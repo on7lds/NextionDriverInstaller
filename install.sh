@@ -23,7 +23,7 @@
 #                                                       #
 #                 (c)2018-2019 by ON7LDS                #
 #                                                       #
-#                        V1.03                          #
+#                        V1.04                          #
 #                                                       #
 #########################################################
 
@@ -224,6 +224,24 @@ echo "+ We are at version $THISVERSION"
 
 if [ $TV  -gt $V ]; then
     echo "+ Start Update"
+else
+    echo -e "\n- No need to update."
+    echo -e "- But it might be an incomplete install"
+    echo -e "-  or you might want to force a reinstall\n"
+
+    echo -n "+ Do you want to reinstall anyway (y,N) ? "
+    x="?"
+    while [ "$x" != "" ]; do
+        read -n 1 x; while read -n 1 -t .1 y; do x="$x$y"; done
+        if [ "$x" = "y" ]; then x="Y"; fi
+        if [ "$x" = "n" ]; then x="N"; fi
+        if [ "$x" = "Y" ]; then V=0; x=""; fi
+        if [ "$x" = "N" ]; then x=""; fi
+    done
+    echo ""
+fi
+
+if [ $TV  -gt $V ]; then
     compileer
     $SYSTEMCTL
     $NDSTOP
