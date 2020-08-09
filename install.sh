@@ -49,6 +49,11 @@ if [ "$(pwd)" != "/tmp/NextionDriver" ]; then echo "- Getting NextionDriver fail
 THISVERSION=$(cat NextionDriver.h | grep VERSION | sed "s/.*VERSION //" | sed 's/"//g')
 TV=$(echo $THISVERSION | sed 's/\.//')
 ND=$(which NextionDriver)
+V=0
+if [ "$ND" != "" ]; then
+ VERSIE=$($ND -V | grep version | sed "s/^.*version //")
+ V=$(echo $VERSIE | sed 's/\.//')
+fi
 PISTAR=$(if [ -f /etc/pistar-release ];then echo "OK"; fi)
 MMDVM=$(which MMDVMHost)
 BINDIR=$(echo "$MMDVM" | sed "s/\/MMDVMHost//")
@@ -168,6 +173,23 @@ if [ $(cat /usr/local/sbin/mmdvmhost.service | grep extion | wc -l) -gt 0 ]; the
 fi
 
 
+if [ $V -gt 0 -a $TV  -eq $V ]; then
+    echo -e "\n- There is an existing binary with the same version number."
+    echo -e "- This might be an incomplete install"
+    echo -e "-  or you might want to force a reinstall\n"
+
+    echo -n "+ Do you want to reinstall anyway (y,N) ? "
+    x="?"
+    while [ "$x" != "" ]; do
+        read -n 1 x; while read -n 1 -t .1 y; do x="$x$y"; done
+        if [ "$x" = "y" ]; then x="Y"; fi
+        if [ "$x" = "n" ]; then x="N"; fi
+        if [ "$x" = "Y" ]; then ND=""; x=""; fi
+        if [ "$x" = "N" ]; then x=""; fi
+    done
+    echo ""
+fi
+
 
 ########## Check for Install ##########
 if [ "$ND" = "" ]; then
@@ -222,26 +244,9 @@ V=$(echo $VERSIE | sed 's/\.//')
 echo "+ NextionDriver $VERSIE found at $ND"
 echo "+ We are at version $THISVERSION"
 
+
 if [ $TV  -gt $V ]; then
     echo "+ Start Update"
-else
-    echo -e "\n- No need to update."
-    echo -e "- But it might be an incomplete install"
-    echo -e "-  or you might want to force a reinstall\n"
-
-    echo -n "+ Do you want to reinstall anyway (y,N) ? "
-    x="?"
-    while [ "$x" != "" ]; do
-        read -n 1 x; while read -n 1 -t .1 y; do x="$x$y"; done
-        if [ "$x" = "y" ]; then x="Y"; fi
-        if [ "$x" = "n" ]; then x="N"; fi
-        if [ "$x" = "Y" ]; then V=0; x=""; fi
-        if [ "$x" = "N" ]; then x=""; fi
-    done
-    echo ""
-fi
-
-if [ $TV  -gt $V ]; then
     compileer
     $SYSTEMCTL
     $NDSTOP
