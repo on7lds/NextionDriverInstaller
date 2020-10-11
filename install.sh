@@ -21,11 +21,33 @@
 #                                                       #
 #                 NextionDriver installer               #
 #                                                       #
-#                 (c)2018-2019 by ON7LDS                #
+#                 (c)2018-2020 by ON7LDS                #
 #                                                       #
-#                        V1.04                          #
+#                        V1.05                          #
 #                                                       #
 #########################################################
+
+
+checkfreespace() {
+    FREE=$(df -aPm /tmp | tail -n 1 | awk -F " " '{ print $4}')
+    if [ $FREE -lt 40 ]; then
+        echo "- ERROR : There is not enough free space in the /tmp directory."
+        echo "   Reboot to (hopefully) free up some space (Y,n) ? "
+        echo "   (after reboot, you will have to start all over with this installation !)"
+    x=""
+    while [ "$x" != "n" ]; do
+    read -n 1 x; while read -n 1 -t .1 y; do x="$x$y"; done
+#        echo -n "[$x]"
+        if [ "$x" = "" ];  then reboot; fi
+        if [ "$x" = "y" ]; then reboot; fi
+        if [ "$x" = "Y" ]; then reboot; fi
+        if [ "$x" = "N" ]; then x="n"; fi
+    done
+    echo -e "\n\n+ OK, not rebooting. Trying to install anyway.\n\n"
+    echo -e " WARNING : Installing this way will probably fail !!!\n\n"
+    fi
+}
+
 
 if [ "$(which gcc)" = "" ]; then echo "- I need gcc. Please install it." exit; fi
 if [ "$(which git)" = "" ]; then echo "- I need git. Please install it." exit; fi
@@ -35,7 +57,7 @@ if [ "$EUID" -ne 0 ]
   then echo "- Please run as root (did you forget to prepend 'sudo' ?)"
   exit
 fi
-
+checkfreespace
 echo "+ Getting NextionDriver ..."
 cd /tmp
 rm -rf /tmp/NextionDriver
@@ -97,11 +119,12 @@ checkversion () {
     exit
     fi
 }
+
 helpfiles () {
     rm -f /etc/groups.txt
     rm -f /etc/stripped.csv
     echo "+ Copying groups and users files"
-    wget "https://api.brandmeister.network/v1.0/groups/" -O /tmp/groups.txt
+    wget --no-check-certificate "https://api.brandmeister.network/v1.0/groups/" -O /tmp/groups.txt
     if [ $? -eq 0 ]; then cp /tmp/groups.txt $DIR/groups.txt; fi
     cp $DIR/groups.txt $FILESDIR
     cp $DIR/stripped.csv $FILESDIR
@@ -121,6 +144,8 @@ herstart () {
     echo -e "\n\n+ OK, not rebooting. Trying to start mmdvmhost.\n\n"
     $SYSTEMCTL
     $MMDVMSTART
+    #free up /tmp
+    rm -rf /tmp/NextionDriver*
 }
 
 
