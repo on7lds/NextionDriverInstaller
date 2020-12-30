@@ -23,7 +23,7 @@
 #                                                       #
 #                 (c)2018-2020 by ON7LDS                #
 #                                                       #
-#                        V1.05                          #
+#                        V1.06                          #
 #                                                       #
 #########################################################
 
@@ -57,6 +57,39 @@ if [ "$EUID" -ne 0 ]
   then echo "- Please run as root (did you forget to prepend 'sudo' ?)"
   exit
 fi
+
+
+
+echo "#######################################################################"
+echo " This is the NextionDriver installer."
+echo ""
+echo " This installers wil install the Nexiondriver"
+echo "  in an already working MMDVMHost configuration"
+echo "  with a WORKING Nextion display."
+echo " It uses the current configuration to ADD the NextionDriver."
+echo ""
+echo " So yes, your Nextion should already work."
+echo "  Not with all the fields filling, but it should already be configured."
+echo "  If not, this installer cannot magically make it work !"
+echo ""
+echo " If your Nextion Display is not yet configured and working,"
+echo "  you should stop here and do that first."
+echo ""
+echo "#######################################################################"
+echo ""
+echo -n " Continue installing (Y,n) ? "
+
+    x="Y"
+    while [ "$x" != "y" ]; do
+    read -n 1 x; while read -n 1 -t .1 y; do x="$x$y"; done
+#        echo -n "[$x]"
+        if [ "$x" = "" ];  then x="y"; fi
+        if [ "$x" = "Y" ]; then x="y"; fi
+        if [ "$x" = "n" ]; then echo ""; exit; fi
+        if [ "$x" = "N" ]; then echo ""; exit; fi
+    done
+    echo -e "\n\n+ OK, continuing ...\n\n"
+
 checkfreespace
 echo "+ Getting NextionDriver ..."
 cd /tmp
